@@ -1,5 +1,4 @@
 'use client';
-
 import { updateStockData } from '@/redux/stocksSlice';
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -15,11 +14,11 @@ const Navbar = () => {
 
   useEffect(() => {
     handleFilterChange(searchStock, selectedWeek);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchStock, selectedWeek]);
 
   return (
-    <div className="flex items-center justify-center p-4 bg-gray-200 border-b border-gray-300 rounded-md shadow-sm mb-1">
+    <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-200 border-b border-gray-300 rounded-md shadow-sm mb-1">
       <input
         type="text"
         name="search"
@@ -28,15 +27,15 @@ const Navbar = () => {
         onChange={(e) => {
           setSearchStock(e.target.value);
         }}
-        className="border border-gray-300 rounded-md px-4 py-2 "
+        className="border border-gray-300 rounded-md px-4 py-2 mb-2 md:mb-0 w-full md:w-1/3"
       />
       <input
         type="text"
         disabled
         name="October"
-        placeholder="Search stock..."
+        placeholder="Month"
         value={'October'}
-        className="border border-white text-black rounded-md px-4 py-2 w-1/4 ml-4"
+        className="border border-white text-black rounded-md px-4 py-2 w-full md:w-1/4 mb-2 md:mb-0"
       />
       <select
         name="week"
@@ -44,7 +43,7 @@ const Navbar = () => {
         onChange={(e) => {
           setSelectedWeek(Number(e.target.value));
         }}
-        className="border border-gray-300 rounded-md px-4 py-2 ml-4 w-1/4"
+        className="border border-gray-300 rounded-md px-4 py-2 w-full md:w-1/4"
       >
         <option value={1}>Week 1</option>
         <option value={2}>Week 2</option>

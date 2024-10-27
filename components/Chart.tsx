@@ -17,7 +17,6 @@ const StockChartWithShapes = () => {
   });
 
   const canvasRef = useRef(null);
-
   const searchStockState: StockState = useSelector(
     (store: RootState) => store.stocks
   );
@@ -161,7 +160,7 @@ const StockChartWithShapes = () => {
   }, [stockState]);
 
   return (
-    <div className="border border-black z-50">
+    <div className="border border-black z-50 sm:w-[100%] md:w-[85%] h-96">
       <canvas ref={canvasRef} width="1200" height="600" />
     </div>
   );

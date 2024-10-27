@@ -6,12 +6,12 @@ import Navbar from '@/components/Navbar';
 
 const HomePage = () => {
   return (
-    <div className="w-screen h-full p-4 flex flex-col items-center justify-center border-black">
-      <h1 className="text-3xl text-blue-500 font-bold my-4">
+    <div className="w-screen h-full p-4 flex flex-col items-center justify-center ">
+      <h1 className="text-3xl text-blue-500 font-bold my-4 text-center">
         Stock Analysis Dashboard
       </h1>
 
-      <div className="w-[35%] px-4 my-2">
+      <div className="w-full md:w-[35%] px-4 my-2">
         <Navbar />
       </div>
       <div className="mb-8 w-full flex justify-center">
