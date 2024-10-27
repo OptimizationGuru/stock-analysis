@@ -1,44 +1,69 @@
+import { stockDataArray } from '@/utils/enums';
 
-"use client"
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
-import { useDispatch } from 'react-redux';
-import { setMockData } from '@/redux/stocksSlice';
-const DataTable = () => {
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch(setMockData()); 
-      }, [dispatch]);
-   
-  const stockData = useSelector((state: RootState) => state.stocks);
-
-  console.log(stockData, 'data');
-  
+const Table = () => {
+  const formatDate = (dateString: number) => {
+    return `${dateString}/Oct/2024`;
+  };
 
   return (
-    <table className="table-auto w-full border border-gray-200">
-      <thead>
-        <tr>
-          <th className="border px-4 py-2">Time</th>
-          <th className="border px-4 py-2">Price</th>
-          <th className="border px-4 py-2">Volume</th>
-          <th className="border px-4 py-2">Volatility</th>
-        </tr>
-      </thead>
-      <tbody>
-        {stockData.price.map((point, index) => (
-          <tr key={index}>
-            <td className="border px-4 py-2">{point.x}</td>
-            <td className="border px-4 py-2">{point.y.toFixed(2)}</td>
-            <td className="border px-4 py-2">{stockData.volume[index]?.y.toFixed(2)}</td>
-            <td className="border px-4 py-2">{stockData.volatility[index]?.y.toFixed(2)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="flex flex-col items-center justify-center">
+      <div className="w-full max-w-3xl overflow-x-auto">
+        <table className="min-w-full border border-gray-300">
+          <thead className="bg-blue-200">
+            <tr className="divide-x divide-gray-300">
+              <th className="border border-gray-300 px-4 py-2 text-center">
+                Date
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-center">
+                Open Price
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-center">
+                Highest Price
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-center">
+                Closing Price
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-center">
+                Lowest Price
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-center">
+                Volume Sold
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {stockDataArray.openPrice?.map((dataPoint, index) => (
+              <tr
+                key={index}
+                className="even:bg-blue-100 divide-x divide-gray-300"
+              >
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {formatDate(dataPoint.day)}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {stockDataArray.openPrice[index]?.value.toFixed(2) || 'N/A'}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {stockDataArray.highestPrice[index]?.value.toFixed(2) ||
+                    'N/A'}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {stockDataArray.closingPrice[index]?.value.toFixed(2) ||
+                    'N/A'}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {stockDataArray.lowestPrice[index]?.value.toFixed(2) || 'N/A'}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {stockDataArray.volumeSold[index]?.value || 'N/A'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 };
 
-export default DataTable;
+export default Table;

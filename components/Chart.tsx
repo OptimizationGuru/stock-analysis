@@ -1,84 +1,138 @@
 'use client';
-
 import React, { useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
+import { stockDataArray } from '@/utils/enums';
 
 Chart.register(...registerables);
 
- const StockChart = () => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const stockData = useSelector((state: RootState) => state.stocks);
+const StockChartWithShapes = () => {
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    if (canvasRef.current) {
-      const ctx = canvasRef.current.getContext('2d');
-      if (!ctx) return;
+    const ctx = canvasRef.current.getContext('2d');
 
-      const chart = new Chart(ctx, {
+    const formatData = (arr) => {
+      return arr.map((el) => ({
+        x: el.day,
+        y: el.value,
+      }));
+    };
+
+    const datasets = [
+      {
+        label: 'Open Price',
+        data: formatData(stockDataArray.openPrice),
+        type: 'line',
+        borderColor: '#FF6384',
+        backgroundColor: '#FF6384',
+        pointStyle: 'circle',
+        radius: 10,
+        fill: false,
+        tension: 0,
+      },
+      {
+        label: 'Closing Price',
+        data: formatData(stockDataArray.closingPrice),
         type: 'scatter',
-        data: {
-          datasets: [
-            {
-              label: 'Price',
-              data: stockData.price.map((point) => ({ x: point.x, y: point.y })),
-              backgroundColor: 'rgba(54, 162, 235, 0.6)',
-              type: 'scatter', // Keep as scatter for visualization
-              pointStyle: 'rect', // Rectangle for price data
-              radius: 10, // Increase size of rectangles
-              showLine: true, // Optional: show line connecting points
-            },
-            {
-              label: 'Volume',
-              data: stockData.volume.map((point) => ({ x: point.x, y: point.y })),
-              backgroundColor: 'rgba(255, 206, 86, 0.6)',
-              type: 'scatter', // Keep as scatter
-              pointStyle: 'triangle', // Triangle for volume data
-              radius: 10, // Increase size of triangles
-            },
-            {
-              label: 'Volatility',
-              data: stockData.volatility.map((point) => ({ x: point.x, y: point.y })),
-              backgroundColor: 'rgba(75, 192, 192, 0.6)',
-              type: 'scatter', // Keep as scatter
-              pointStyle: 'rectRot', // Rotated square for volatility data
-              radius: 10, // Increase size of squares
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            tooltip: {
-              callbacks: {
-                label: (context) => {
-                  const { dataset, dataIndex } = context;
-                  return `${dataset.label}: ${dataset.data[dataIndex].y}`;
-                },
-                afterBody: (context) => {
-                  const values = context[0].dataset.data;
-                  const avg = (values.reduce((acc, val) => acc + val.y, 0) / values.length).toFixed(2);
-                  return `Avg: ${avg}`;
-                },
+        borderColor: '#36A2EB',
+        backgroundColor: '#36A2EB',
+        pointStyle: 'rect',
+        radius: 10,
+        hoverRadius: 12,
+        borderWidth: 2,
+      },
+      {
+        label: 'Highest Price',
+        data: formatData(stockDataArray.highestPrice),
+        type: 'scatter',
+        borderColor: '#FFCE56',
+        backgroundColor: '#FFCE56',
+        pointStyle: 'triangle',
+        radius: 10,
+        hoverRadius: 12,
+        borderWidth: 2,
+      },
+      {
+        label: 'Lowest Price',
+        data: formatData(stockDataArray.lowestPrice),
+        type: 'scatter',
+        borderColor: '#4BC0C0',
+        backgroundColor: '#4BC0C0',
+        pointStyle: 'circle',
+        radius: 10,
+        hoverRadius: 12,
+        borderWidth: 2,
+      },
+      {
+        label: 'Volume',
+        data: formatData(stockDataArray.volumeSold),
+        type: 'scatter',
+        borderColor: '#9966FF',
+        backgroundColor: '#9966FF',
+        pointStyle: 'star',
+        borderWidth: 2,
+        radius: 10,
+        hoverRadius: 12,
+        tension: 0.3,
+      },
+    ];
+
+    const chart = new Chart(ctx, {
+      type: 'scatter',
+      data: {
+        datasets: datasets,
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const label = context.dataset.label || '';
+                const value = context.raw.y.toFixed(2);
+                return `${label}: ${label.includes('Volume') ? value + ' Units' : '$' + value}`;
               },
             },
           },
-          scales: {
-            x: {
-              type: 'linear',
-              position: 'bottom',
-            },
+          legend: {
+            display: true,
+            position: 'top',
           },
         },
-      });
-      
+        layout: {
+          padding: { left: 20, right: 20 },
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Days',
+            },
+            beginAtZero: false,
+            ticks: {
+              callback: (value) => `Day ${value}`,
+            },
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Prices (in $) / Volume (in Thousands)',
+            },
+            beginAtZero: true,
+          },
+        },
+      },
+    });
 
-      return () => chart.destroy();
-    }
-  }, [stockData]);
+    return () => chart.destroy();
+  }, []);
 
-  return <canvas ref={canvasRef} width="400" height="200" />;
+  return (
+    <div className=" border border-black z-50">
+      <canvas ref={canvasRef} width="1200" height="600" />
+    </div>
+  );
 };
 
-export default StockChart;
+export default StockChartWithShapes;
