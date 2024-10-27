@@ -139,11 +139,11 @@ const StockChartWithShapes = () => {
           x: {
             title: {
               display: true,
-              text: 'Days',
+              text: `Week Days`,
             },
             beginAtZero: false,
             ticks: {
-              callback: (value) => `Day ${value}`,
+              callback: (value) => `Oct ${value}`,
             },
           },
           y: {

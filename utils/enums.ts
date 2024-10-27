@@ -26,6 +26,20 @@ export interface StockData {
   data: DailyStockData[];
 }
 
+export interface StockCacheItem extends StockState {
+  weekNumber: number;
+}
+
+export interface StockState {
+  stock: string;
+  openPrice: StockDataPoint[];
+  highestPrice: StockDataPoint[];
+  closingPrice: StockDataPoint[];
+  lowestPrice: StockDataPoint[];
+  volumeSold: StockDataPoint[];
+  cache: StockCacheItem[];
+}
+
 export const defaultStockName = 'IBM';
 export const defaultWeek = 1;
 

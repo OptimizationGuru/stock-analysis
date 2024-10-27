@@ -13,6 +13,7 @@ const initialState: StockState = {
   closingPrice: stockDataArray.closingPrice,
   lowestPrice: stockDataArray.lowestPrice,
   volumeSold: stockDataArray.volumeSold,
+  cache: [],
 };
 
 const stockSlice = createSlice({
@@ -27,18 +28,28 @@ const stockSlice = createSlice({
 
       if (stockName.trim().length <= 2) return;
 
+      const existingCacheIndex = state.cache.findIndex(
+        (item) => item.stock === stockName && item.weekNumber === weekNumber
+      );
+
+      if (existingCacheIndex !== -1) {
+        return state.cache[existingCacheIndex];
+      }
+
       const generatedStockData = generateMockStockData(stockName, weekNumber);
       const transformedData = transformStockData(generatedStockData);
 
-      return {
-        ...state,
-        stock: transformedData.stock,
-        openPrice: transformedData.openPrice,
-        highestPrice: transformedData.highestPrice,
-        closingPrice: transformedData.closingPrice,
-        lowestPrice: transformedData.lowestPrice,
-        volumeSold: transformedData.volumeSold,
-      };
+      state.cache.unshift({ transformedData });
+      if (state.cache.length > 100) {
+        state.cache.pop();
+      }
+
+      state.stock = transformedData.stock;
+      state.openPrice = transformedData.openPrice;
+      state.highestPrice = transformedData.highestPrice;
+      state.closingPrice = transformedData.closingPrice;
+      state.lowestPrice = transformedData.lowestPrice;
+      state.volumeSold = transformedData.volumeSold;
     },
   },
 });
