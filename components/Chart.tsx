@@ -164,7 +164,6 @@ const StockChartWithShapes: React.FC = () => {
 
       if (points.length) {
         let day: number | null = null;
-        const tooltipPoints: { label: string; value: number }[] = [];
 
         points.forEach((point) => {
           const datasetIndex = point.datasetIndex;
