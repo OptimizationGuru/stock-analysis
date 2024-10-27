@@ -6,7 +6,7 @@ import { stockDataArray, StockDataPoint, StockState } from '@/utils/enums';
 
 Chart.register(...registerables);
 
-const StockChartWithShapes = () => {
+const StockChartWithShapes: React.FC = () => {
   const [stockState, setStockState] = useState({
     stock: stockDataArray.stock,
     openPrice: stockDataArray.openPrice,
@@ -16,7 +16,14 @@ const StockChartWithShapes = () => {
     volumeSold: stockDataArray.volumeSold,
   });
 
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [tooltipData, setTooltipData] = useState<
+    { label: string; value: number }[]
+  >([]);
+  const [tooltipPosition, setTooltipPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const searchStockState: StockState = useSelector(
     (store: RootState) => store.stocks
   );
@@ -35,12 +42,13 @@ const StockChartWithShapes = () => {
   }, [searchStockState]);
 
   useEffect(() => {
-    const ctx = canvasRef.current.getContext('2d');
+    const ctx = canvasRef.current?.getContext('2d');
 
     const formatData = (arr: StockDataPoint[]) => {
       return arr?.map((el) => ({
         x: el.day,
         y: el.value,
+        day: el.day,
       }));
     };
 
@@ -118,27 +126,14 @@ const StockChartWithShapes = () => {
         maintainAspectRatio: false,
         plugins: {
           tooltip: {
-            callbacks: {
-              label: (context) => {
-                const label = context.dataset.label || '';
-                const value = context.raw.y.toFixed(2);
-                return `${label}: ${label.includes('Volume') ? value + ' Units' : '$' + value}`;
-              },
-            },
+            enabled: false,
           },
-          legend: {
-            display: true,
-            position: 'top',
-          },
-        },
-        layout: {
-          padding: { left: 20, right: 20 },
         },
         scales: {
           x: {
             title: {
               display: true,
-              text: `Week Days`,
+              text: 'Week Days',
             },
             beginAtZero: false,
             ticks: {
@@ -156,12 +151,110 @@ const StockChartWithShapes = () => {
       },
     });
 
-    return () => chart.destroy();
+    const handleMouseMove = (event: MouseEvent) => {
+      const canvasPosition = canvasRef.current?.getBoundingClientRect();
+      const mouseX = event.clientX - (canvasPosition?.left || 0);
+      const mouseY = event.clientY - (canvasPosition?.top || 0);
+      const points = chart.getElementsAtEventForMode(
+        event,
+        'nearest',
+        { intersect: true },
+        false
+      );
+
+      if (points.length) {
+        let day: number | null = null;
+        const tooltipPoints: { label: string; value: number }[] = [];
+
+        points.forEach((point) => {
+          const datasetIndex = point.datasetIndex;
+          const index = point.index;
+          const dataset = datasets[datasetIndex];
+          const dataPoint = dataset.data[index] as {
+            x: number;
+            y: number;
+            day: number;
+          };
+
+          if (dataPoint) {
+            if (!day) day = dataPoint.day;
+          }
+        });
+
+        if (day !== null) {
+          const open =
+            stockState.openPrice.find((d) => d.day === day)?.value || 0;
+          const close =
+            stockState.closingPrice.find((d) => d.day === day)?.value || 0;
+          const high =
+            stockState.highestPrice.find((d) => d.day === day)?.value || 0;
+          const low =
+            stockState.lowestPrice.find((d) => d.day === day)?.value || 0;
+          const volume =
+            stockState.volumeSold.find((d) => d.day === day)?.value || 0;
+
+          const values = [
+            { label: 'Open Price', value: open },
+            { label: 'Closing Price', value: close },
+            { label: 'Highest Price', value: high },
+            { label: 'Lowest Price', value: low },
+          ];
+
+          const groupedValues: { label: string; value: number }[] = [];
+
+          for (let i = 0; i < values.length; i++) {
+            for (let j = i + 1; j < values.length; j++) {
+              const difference = Math.abs(values[i].value - values[j].value);
+              if (difference < 200) {
+                if (!groupedValues.includes(values[i]))
+                  groupedValues.push(values[i]);
+                if (!groupedValues.includes(values[j]))
+                  groupedValues.push(values[j]);
+              }
+            }
+          }
+
+          if (groupedValues.length > 0) {
+            setTooltipData(groupedValues);
+          } else {
+            setTooltipData([{ label: 'Volume Sold', value: volume }]);
+          }
+          setTooltipPosition({ x: mouseX, y: mouseY });
+        }
+      } else {
+        setTooltipData([]);
+        setTooltipPosition(null);
+      }
+    };
+
+    const canvasElement = canvasRef.current;
+    canvasElement?.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      canvasElement?.removeEventListener('mousemove', handleMouseMove);
+      chart.destroy();
+    };
   }, [stockState]);
 
   return (
-    <div className="border border-black z-50 sm:w-[100%] md:w-[85%] h-96">
+    <div className="border border-black z-50 sm:w-[100%] lg:w-[85%] h-96 relative">
       <canvas ref={canvasRef} width="1200" height="600" />
+      {tooltipPosition && tooltipData.length > 0 && (
+        <div
+          className="absolute bg-white border border-gray-300 p-2 rounded shadow"
+          style={{
+            left: tooltipPosition.x + 10,
+            top: tooltipPosition.y + 10,
+            pointerEvents: 'none',
+          }}
+        >
+          {tooltipData.map((item, index) => (
+            <div key={index}>
+              {item.label}: ${item.value.toFixed(2)}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
