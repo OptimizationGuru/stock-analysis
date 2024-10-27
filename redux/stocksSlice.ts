@@ -1,53 +1,48 @@
+import {
+  generateMockStockData,
+  stockDataArray,
+  StockState,
+  transformStockData,
+} from '@/utils/enums';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface StockDataPoint {
-  x: number; // Timestamp or any x-axis value
-  y: number; // Price, volume, or volatility value
-}
-
-interface StockData {
-  price: StockDataPoint[];
-  volume: StockDataPoint[];
-  volatility: StockDataPoint[];
-}
-
-
-
-const initialState: StockData = {
-  price: [],
-  volume: [],
-  volatility: [],
+const initialState: StockState = {
+  stock: stockDataArray.stock,
+  openPrice: stockDataArray.openPrice,
+  highestPrice: stockDataArray.highestPrice,
+  closingPrice: stockDataArray.closingPrice,
+  lowestPrice: stockDataArray.lowestPrice,
+  volumeSold: stockDataArray.volumeSold,
 };
 
-const stocksSlice = createSlice({
-  name: 'stocks',
+const stockSlice = createSlice({
+  name: 'stock',
   initialState,
   reducers: {
-    updateData: (state, action: PayloadAction<StockData>) => {
-      state.price = action.payload.price;
-      state.volume = action.payload.volume;
-      state.volatility = action.payload.volatility;
+    updateStockData: (
+      state,
+      action: PayloadAction<{ stockName: string; weekNumber: number }>
+    ) => {
+      const { stockName, weekNumber } = action.payload;
+
+      if (stockName.trim().length <= 2) return;
+
+      const generatedStockData = generateMockStockData(stockName, weekNumber);
+      const transformedData = transformStockData(generatedStockData);
+
+      return {
+        ...state,
+        stock: transformedData.stock,
+        openPrice: transformedData.openPrice,
+        highestPrice: transformedData.highestPrice,
+        closingPrice: transformedData.closingPrice,
+        lowestPrice: transformedData.lowestPrice,
+        volumeSold: transformedData.volumeSold,
+      };
     },
-    setMockData: (state) => {
-      const dataPoints = 42; 
-      const xInterval = 1; 
-    
-      state.price = Array.from({ length: dataPoints }, (_, i) => ({
-        x: (i+1 )* xInterval, 
-        y: Math.random() * 100,
-      }));
-      state.volume = Array.from({ length: dataPoints }, (_, i) => ({
-        x: (i+1 )* xInterval,
-        y: Math.random() * 200,
-      }));
-      state.volatility = Array.from({ length: dataPoints }, (_, i) => ({
-        x: (i+1 )* xInterval,
-        y: Math.random() * 50,
-      }));
-    },
-    
   },
 });
 
-export const { updateData, setMockData } = stocksSlice.actions;
-export default stocksSlice.reducer;
+export const { updateStockData } = stockSlice.actions;
+
+export default stockSlice.reducer;

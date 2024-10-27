@@ -1,18 +1,45 @@
-'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Chart, registerables } from 'chart.js';
-import { stockDataArray } from '@/utils/enums';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { stockDataArray, StockDataPoint, StockState } from '@/utils/enums';
 
 Chart.register(...registerables);
 
 const StockChartWithShapes = () => {
+  const [stockState, setStockState] = useState({
+    stock: stockDataArray.stock,
+    openPrice: stockDataArray.openPrice,
+    highestPrice: stockDataArray.highestPrice,
+    closingPrice: stockDataArray.closingPrice,
+    lowestPrice: stockDataArray.lowestPrice,
+    volumeSold: stockDataArray.volumeSold,
+  });
+
   const canvasRef = useRef(null);
+
+  const searchStockState: StockState = useSelector(
+    (store: RootState) => store.stocks
+  );
+
+  useEffect(() => {
+    if (searchStockState?.stock) {
+      setStockState({
+        stock: searchStockState.stock,
+        openPrice: searchStockState.openPrice,
+        highestPrice: searchStockState.highestPrice,
+        closingPrice: searchStockState.closingPrice,
+        lowestPrice: searchStockState.lowestPrice,
+        volumeSold: searchStockState.volumeSold,
+      });
+    }
+  }, [searchStockState]);
 
   useEffect(() => {
     const ctx = canvasRef.current.getContext('2d');
 
-    const formatData = (arr) => {
-      return arr.map((el) => ({
+    const formatData = (arr: StockDataPoint[]) => {
+      return arr?.map((el) => ({
         x: el.day,
         y: el.value,
       }));
@@ -20,8 +47,13 @@ const StockChartWithShapes = () => {
 
     const datasets = [
       {
+        label: stockState.stock,
+        borderColor: 'transparent',
+        backgroundColor: 'transparent',
+      },
+      {
         label: 'Open Price',
-        data: formatData(stockDataArray.openPrice),
+        data: formatData(stockState.openPrice),
         type: 'line',
         borderColor: '#FF6384',
         backgroundColor: '#FF6384',
@@ -32,7 +64,7 @@ const StockChartWithShapes = () => {
       },
       {
         label: 'Closing Price',
-        data: formatData(stockDataArray.closingPrice),
+        data: formatData(stockState.closingPrice),
         type: 'scatter',
         borderColor: '#36A2EB',
         backgroundColor: '#36A2EB',
@@ -43,7 +75,7 @@ const StockChartWithShapes = () => {
       },
       {
         label: 'Highest Price',
-        data: formatData(stockDataArray.highestPrice),
+        data: formatData(stockState.highestPrice),
         type: 'scatter',
         borderColor: '#FFCE56',
         backgroundColor: '#FFCE56',
@@ -54,7 +86,7 @@ const StockChartWithShapes = () => {
       },
       {
         label: 'Lowest Price',
-        data: formatData(stockDataArray.lowestPrice),
+        data: formatData(stockState.lowestPrice),
         type: 'scatter',
         borderColor: '#4BC0C0',
         backgroundColor: '#4BC0C0',
@@ -65,7 +97,7 @@ const StockChartWithShapes = () => {
       },
       {
         label: 'Volume',
-        data: formatData(stockDataArray.volumeSold),
+        data: formatData(stockState.volumeSold),
         type: 'scatter',
         borderColor: '#9966FF',
         backgroundColor: '#9966FF',
@@ -126,10 +158,10 @@ const StockChartWithShapes = () => {
     });
 
     return () => chart.destroy();
-  }, []);
+  }, [stockState]);
 
   return (
-    <div className=" border border-black z-50">
+    <div className="border border-black z-50">
       <canvas ref={canvasRef} width="1200" height="600" />
     </div>
   );
