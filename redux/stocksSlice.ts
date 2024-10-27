@@ -1,10 +1,21 @@
 import {
   generateMockStockData,
   stockDataArray,
+  StockDataPoint,
   StockState,
   transformStockData,
 } from '@/utils/enums';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface CachedStockItem {
+  stock: string;
+  weekNumber: number;
+  openPrice: StockDataPoint[];
+  highestPrice: StockDataPoint[];
+  closingPrice: StockDataPoint[];
+  lowestPrice: StockDataPoint[];
+  volumeSold: StockDataPoint[];
+}
 
 const initialState: StockState = {
   stock: stockDataArray.stock,
@@ -33,15 +44,34 @@ const stockSlice = createSlice({
       );
 
       if (existingCacheIndex !== -1) {
-        return state.cache[existingCacheIndex];
+        const existingData = state.cache[existingCacheIndex];
+        state.stock = existingData.stock;
+        state.openPrice = existingData.openPrice;
+        state.highestPrice = existingData.highestPrice;
+        state.closingPrice = existingData.closingPrice;
+        state.lowestPrice = existingData.lowestPrice;
+        state.volumeSold = existingData.volumeSold;
+        return;
       }
 
       const generatedStockData = generateMockStockData(stockName, weekNumber);
-      const transformedData = transformStockData(generatedStockData);
+      const transformedData: StockState =
+        transformStockData(generatedStockData);
 
-      state.cache.unshift({ transformedData });
+      const newCacheItem: CachedStockItem = {
+        stock: stockName,
+        weekNumber,
+        openPrice: transformedData.openPrice,
+        highestPrice: transformedData.highestPrice,
+        closingPrice: transformedData.closingPrice,
+        lowestPrice: transformedData.lowestPrice,
+        volumeSold: transformedData.volumeSold,
+      };
+
+      state.cache.push(newCacheItem);
+
       if (state.cache.length > 100) {
-        state.cache.pop();
+        state.cache.shift();
       }
 
       state.stock = transformedData.stock;
