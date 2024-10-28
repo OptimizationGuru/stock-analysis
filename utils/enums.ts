@@ -26,8 +26,14 @@ export interface StockData {
   data: DailyStockData[];
 }
 
-export interface StockCacheItem extends StockState {
+export interface StockCacheItem {
+  stock: string;
   weekNumber: number;
+  openPrice: StockDataPoint[];
+  highestPrice: StockDataPoint[];
+  closingPrice: StockDataPoint[];
+  lowestPrice: StockDataPoint[];
+  volumeSold: StockDataPoint[];
 }
 
 export interface StockState {
@@ -113,6 +119,7 @@ export const transformStockData = (
       day: item.day,
       value: item.volumeSold,
     })),
+    cache: [],
   };
 };
 

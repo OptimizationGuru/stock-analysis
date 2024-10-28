@@ -1,9 +1,12 @@
 'use client';
+import { StockState } from '@/utils/enums';
 import { RootState } from '../redux/store';
 import { useSelector } from 'react-redux';
 
 const Table = () => {
-  const stocksData = useSelector((store: RootState) => store.stocks);
+  const stocksData: StockState = useSelector(
+    (store: RootState) => store.stocks
+  );
 
   const formatDate = (day: number) => `${day}/10/2024`;
 
@@ -30,32 +33,48 @@ const Table = () => {
               ))}
             </tr>
           </thead>
+
           <tbody>
-            {stocksData.openPrice?.map((dataPoint, index) => (
-              <tr
-                key={index}
-                className="even:bg-blue-100 divide-x divide-gray-300"
-              >
-                <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
-                  {formatDate(dataPoint.day)}
-                </td>
-                <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
-                  {stocksData.openPrice[index]?.value.toFixed(2) || 'N/A'}
-                </td>
-                <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
-                  {stocksData.highestPrice[index]?.value.toFixed(2) || 'N/A'}
-                </td>
-                <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
-                  {stocksData.closingPrice[index]?.value.toFixed(2) || 'N/A'}
-                </td>
-                <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
-                  {stocksData.lowestPrice[index]?.value.toFixed(2) || 'N/A'}
-                </td>
-                <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
-                  {stocksData.volumeSold[index]?.value || 'N/A'}
+            {stocksData &&
+            stocksData.openPrice &&
+            stocksData.openPrice.length > 0 ? (
+              stocksData.openPrice.map((dataPoint, index) => (
+                <tr
+                  key={index}
+                  className="even:bg-blue-100 divide-x divide-gray-300"
+                >
+                  <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
+                    {formatDate(dataPoint.day)}
+                  </td>
+                  <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
+                    {stocksData.openPrice[index]?.value.toFixed(2) || 'N/A'}
+                  </td>
+                  <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
+                    {stocksData.highestPrice?.[index]?.value.toFixed(2) ||
+                      'N/A'}
+                  </td>
+                  <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
+                    {stocksData.closingPrice?.[index]?.value.toFixed(2) ||
+                      'N/A'}
+                  </td>
+                  <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
+                    {stocksData.lowestPrice?.[index]?.value.toFixed(2) || 'N/A'}
+                  </td>
+                  <td className="border border-gray-300 px-2 py-1 text-center text-xs md:text-sm lg:text-base">
+                    {stocksData.volumeSold?.[index]?.value || 'N/A'}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={6}
+                  className="border border-gray-300 text-center py-2"
+                >
+                  No data available
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

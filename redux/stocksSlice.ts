@@ -7,7 +7,7 @@ import {
 } from '@/utils/enums';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface CachedStockItem {
+interface StockCacheItem {
   stock: string;
   weekNumber: number;
   openPrice: StockDataPoint[];
@@ -58,7 +58,7 @@ const stockSlice = createSlice({
       const transformedData: StockState =
         transformStockData(generatedStockData);
 
-      const newCacheItem: CachedStockItem = {
+      const newCacheItem: StockCacheItem = {
         stock: stockName,
         weekNumber,
         openPrice: transformedData.openPrice,

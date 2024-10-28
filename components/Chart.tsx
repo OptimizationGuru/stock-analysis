@@ -2,18 +2,21 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Chart, registerables } from 'chart.js';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import { ChartDataset } from 'chart.js';
+
 import { stockDataArray, StockDataPoint, StockState } from '@/utils/enums';
 
 Chart.register(...registerables);
 
 const StockChartWithShapes: React.FC = () => {
-  const [stockState, setStockState] = useState({
+  const [stockState, setStockState] = useState<StockState>({
     stock: stockDataArray.stock,
     openPrice: stockDataArray.openPrice,
     highestPrice: stockDataArray.highestPrice,
     closingPrice: stockDataArray.closingPrice,
     lowestPrice: stockDataArray.lowestPrice,
     volumeSold: stockDataArray.volumeSold,
+    cache: [],
   });
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -30,45 +33,54 @@ const StockChartWithShapes: React.FC = () => {
 
   useEffect(() => {
     if (searchStockState?.stock) {
-      setStockState({
+      setStockState((prevState) => ({
+        ...prevState,
         stock: searchStockState.stock,
         openPrice: searchStockState.openPrice,
         highestPrice: searchStockState.highestPrice,
         closingPrice: searchStockState.closingPrice,
         lowestPrice: searchStockState.lowestPrice,
         volumeSold: searchStockState.volumeSold,
-      });
+      }));
     }
   }, [searchStockState]);
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx) {
+      console.error('Canvas context not available');
+      return;
+    }
 
     const formatData = (arr: StockDataPoint[]) => {
-      return arr?.map((el) => ({
-        x: el.day,
-        y: el.value,
-        day: el.day,
-      }));
+      return (
+        arr?.map((el) => ({
+          x: el.day,
+          y: el.value,
+          day: el.day,
+        })) || []
+      );
     };
 
-    const datasets = [
+    const datasets: ChartDataset<
+      'scatter',
+      { x: number; y: number; day: number }[]
+    >[] = [
       {
         label: stockState.stock,
         borderColor: 'transparent',
         backgroundColor: 'transparent',
+        data: [],
       },
       {
         label: 'Open Price',
         data: formatData(stockState.openPrice),
-        type: 'line',
+        showLine: true,
         borderColor: '#FF6384',
         backgroundColor: '#FF6384',
         pointStyle: 'circle',
-        radius: 10,
-        fill: false,
-        tension: 0,
       },
+
       {
         label: 'Closing Price',
         data: formatData(stockState.closingPrice),
@@ -76,10 +88,11 @@ const StockChartWithShapes: React.FC = () => {
         borderColor: '#36A2EB',
         backgroundColor: '#36A2EB',
         pointStyle: 'rect',
-        radius: 10,
-        hoverRadius: 12,
+        pointRadius: 10,
+        pointHoverRadius: 12,
         borderWidth: 2,
       },
+
       {
         label: 'Highest Price',
         data: formatData(stockState.highestPrice),
@@ -87,8 +100,8 @@ const StockChartWithShapes: React.FC = () => {
         borderColor: '#FFCE56',
         backgroundColor: '#FFCE56',
         pointStyle: 'triangle',
-        radius: 10,
-        hoverRadius: 12,
+        pointRadius: 10,
+        pointHoverRadius: 12,
         borderWidth: 2,
       },
       {
@@ -98,8 +111,8 @@ const StockChartWithShapes: React.FC = () => {
         borderColor: '#4BC0C0',
         backgroundColor: '#4BC0C0',
         pointStyle: 'circle',
-        radius: 10,
-        hoverRadius: 12,
+        pointRadius: 10,
+        pointHoverRadius: 12,
         borderWidth: 2,
       },
       {
@@ -110,8 +123,8 @@ const StockChartWithShapes: React.FC = () => {
         backgroundColor: '#9966FF',
         pointStyle: 'star',
         borderWidth: 2,
-        radius: 10,
-        hoverRadius: 12,
+        pointRadius: 10,
+        pointHoverRadius: 12,
         tension: 0.3,
       },
     ];
@@ -240,16 +253,15 @@ const StockChartWithShapes: React.FC = () => {
       <canvas ref={canvasRef} width="1200" height="600" />
       {tooltipPosition && tooltipData.length > 0 && (
         <div
-          className="absolute bg-white border border-gray-300 p-2 rounded shadow"
+          className="absolute border border-gray-200 bg-white p-2 rounded shadow-lg"
           style={{
-            left: tooltipPosition.x + 10,
-            top: tooltipPosition.y + 10,
-            pointerEvents: 'none',
+            left: tooltipPosition.x,
+            top: tooltipPosition.y,
           }}
         >
-          {tooltipData.map((item, index) => (
-            <div key={index}>
-              {item.label}: ${item.value.toFixed(2)}
+          {tooltipData.map((data) => (
+            <div key={data.label}>
+              {data.label}: ${data.value}
             </div>
           ))}
         </div>
