@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TrendingTrade
 
-## Getting Started
+TrendingTrade is a dynamic and user-friendly web application designed for stock market enthusiasts and traders. The platform allows users to easily search for stocks, view real-time data, and analyze market trends. Built with modern web technologies, TrendingTrade provides an intuitive interface and a range of powerful features to help users make informed trading decisions.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Stock Search
+   Real-Time Search: Quickly search for stocks using an intelligent autocomplete feature that suggests stocks based on user input.
+   Stock Information: Displays key information about each stock, including its name, symbol, and current price.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Market Trends
+   Trending Stocks: View a curated list of trending stocks based on real-time market data and user interest.
+   Performance Charts: Analyze stock performance over various timeframes with interactive charts.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. User-Friendly Interface
+   Responsive Design: The application is fully responsive, ensuring a seamless experience on desktops, tablets, and mobile devices.
+   Easy Navigation: Intuitive navigation menus and a clean layout make it easy for users to access different features.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Live Demo
 
-## Learn More
+You can explore the live version of TrendingTrade here: [Live Demo - TrendingTrade](https://tradetrends.netlify.app/)
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠 Skills
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- JavaScript
+- ReactJS
+- HTML
+- CSS
+- TailwindCSS
+- TypeScript
+- Redux (or any other relevant skills)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📚 Resources
 
-## Deploy on Vercel
+- Mock Data (for stock information)
+- Chart.js (for data visualization)
+- Axios (for API calls)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Authors
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [OptimizationGuru](https://github.com/OptimizationGuru)
