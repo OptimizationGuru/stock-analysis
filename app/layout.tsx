@@ -10,6 +10,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="../public/favicon.ico" />
+        <title>TrendingTrade</title>
+      </head>
       <body>
         <Provider store={store}>{children}</Provider>
       </body>

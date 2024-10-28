@@ -1,9 +1,9 @@
-'use client';
-import { updateStockData } from '@/redux/stocksSlice';
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
+import { updateStockData } from '@/redux/stocksSlice';
+import StockSearchBar from './Searchbar';
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const [searchStock, setSearchStock] = useState('IBM');
   const [selectedWeek, setSelectedWeek] = useState(1);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -31,15 +31,12 @@ const Navbar = () => {
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-400 border-b border-gray-300 rounded-md shadow-sm mb-4 min-w-40 w-full gap-6">
-      <input
-        type="text"
-        name="search"
-        placeholder="Search stock..."
-        value={searchStock}
-        onChange={(e) => {
-          setSearchStock(e.target.value);
+      <StockSearchBar
+        searchStock={searchStock}
+        setSearchStock={setSearchStock}
+        onStockSelect={(selectedStock: string) => {
+          setSearchStock(selectedStock);
         }}
-        className="border border-gray-300 rounded-md px-4 py-2 mb-2 md:mb-0 w-full md:w-1/3 min-w-24 flex-grow"
       />
       <input
         type="text"

@@ -2,7 +2,7 @@
 import React from 'react';
 import Chart from '../components/Chart';
 import Table from '../components/Table';
-import Navbar from '@/components/Navbar';
+import Navbar from '../components/Navbar';
 
 const HomePage = () => {
   return (
@@ -11,7 +11,7 @@ const HomePage = () => {
         Stock Analysis Dashboard
       </h1>
 
-      <div className="w-full md:w-[45%] mb-4">
+      <div className="w-full md:w-[45%] mb-[100px]">
         <Navbar />
       </div>
 
