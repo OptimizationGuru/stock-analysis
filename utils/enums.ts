@@ -10,6 +10,7 @@ export interface StockState {
   closingPrice: StockDataPoint[];
   lowestPrice: StockDataPoint[];
   volumeSold: StockDataPoint[];
+  cache: StockCacheItem[];
 }
 
 export interface DailyStockData {
@@ -36,38 +37,40 @@ export interface StockCacheItem {
   volumeSold: StockDataPoint[];
 }
 
-export interface StockState {
-  stock: string;
-  openPrice: StockDataPoint[];
-  highestPrice: StockDataPoint[];
-  closingPrice: StockDataPoint[];
-  lowestPrice: StockDataPoint[];
-  volumeSold: StockDataPoint[];
-  cache: StockCacheItem[];
-}
+const seedRandom = (seed: string) => {
+  let m = 0x80000000,
+    a = 1103515245,
+    c = 12345;
+  let state = 0;
 
-export const defaultStockName = 'IBM';
-export const defaultWeek = 1;
+  const random = () => {
+    state = (state * a + c) % m;
+    return state / (m - 1);
+  };
+
+  return { random };
+};
 
 export const generateMockStockData = (
   stockName: string,
-  weekNumber: number
+  weekNumber: number,
+  seed: string
 ): StockData => {
   const stockData: DailyStockData[] = [];
+  const { random } = seedRandom(seed);
 
   const startDay = (weekNumber - 1) * 7 + 1;
   const endDay = startDay + 6;
 
-  let previousClosingPrice = 1000 + Math.random() * 1000;
-  let volumeSold = Math.floor(Math.random() * 3000) + 500;
+  let previousClosingPrice = 1000 + random() * 1000;
+  let volumeSold = Math.floor(random() * 3000) + 500;
 
   for (let day = startDay; day <= endDay; day++) {
     const openPrice = previousClosingPrice;
-    const highestPrice = openPrice + Math.random() * 2000;
-    const lowestPrice = openPrice - Math.random() * 1000;
-    const closingPrice =
-      lowestPrice + Math.random() * (highestPrice - lowestPrice);
-    volumeSold = Math.floor(Math.random() * 3000) + 500;
+    const highestPrice = openPrice + random() * 2000;
+    const lowestPrice = openPrice - random() * 1000;
+    const closingPrice = lowestPrice + random() * (highestPrice - lowestPrice);
+    volumeSold = Math.floor(random() * 3000) + 500;
 
     const dailyData: DailyStockData = {
       day,
@@ -79,7 +82,6 @@ export const generateMockStockData = (
     };
 
     stockData.push(dailyData);
-
     previousClosingPrice = dailyData.closingPrice;
   }
 
@@ -89,9 +91,13 @@ export const generateMockStockData = (
   };
 };
 
+export const defaultStockName = 'IBM';
+export const defaultWeek = 1;
+
 export const generatedStockData = generateMockStockData(
   defaultStockName,
-  defaultWeek
+  defaultWeek,
+  'Amex'
 );
 
 export const transformStockData = (
@@ -123,5 +129,5 @@ export const transformStockData = (
   };
 };
 
-const currentStockData = generateMockStockData(defaultStockName, defaultWeek);
+const currentStockData = generatedStockData;
 export const stockDataArray = transformStockData(currentStockData);

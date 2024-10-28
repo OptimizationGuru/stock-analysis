@@ -33,7 +33,6 @@ const Table = () => {
               ))}
             </tr>
           </thead>
-
           <tbody>
             {stocksData &&
             stocksData.openPrice &&

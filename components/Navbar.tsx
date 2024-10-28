@@ -1,11 +1,12 @@
 'use client';
 import { updateStockData } from '@/redux/stocksSlice';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 
 const Navbar = () => {
   const [searchStock, setSearchStock] = useState('IBM');
   const [selectedWeek, setSelectedWeek] = useState(1);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dispatch = useDispatch();
 
   const handleFilterChange = (searchStock: string, week: number) => {
@@ -13,12 +14,23 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    handleFilterChange(searchStock, selectedWeek);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      handleFilterChange(searchStock, selectedWeek);
+    }, 500);
+
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
   }, [searchStock, selectedWeek]);
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-200 border-b border-gray-300 rounded-md shadow-sm mb-1">
+    <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-400 border-b border-gray-300 rounded-md shadow-sm mb-4 min-w-40 w-full gap-6">
       <input
         type="text"
         name="search"
@@ -27,7 +39,7 @@ const Navbar = () => {
         onChange={(e) => {
           setSearchStock(e.target.value);
         }}
-        className="border border-gray-300 rounded-md px-4 py-2 mb-2 md:mb-0 w-full md:w-1/3"
+        className="border border-gray-300 rounded-md px-4 py-2 mb-2 md:mb-0 w-full md:w-1/3 min-w-24 flex-grow"
       />
       <input
         type="text"
@@ -35,7 +47,7 @@ const Navbar = () => {
         name="October"
         placeholder="Month"
         value={'October'}
-        className="border border-white text-black rounded-md px-4 py-2 w-full md:w-1/4 mb-2 md:mb-0"
+        className="border border-white text-black rounded-md px-4 py-2 w-full md:w-1/4 mb-2 md:mb-0 min-w-24 flex-grow"
       />
       <select
         name="week"
@@ -43,7 +55,7 @@ const Navbar = () => {
         onChange={(e) => {
           setSelectedWeek(Number(e.target.value));
         }}
-        className="border border-gray-300 rounded-md px-4 py-2 w-full md:w-1/4"
+        className="border border-gray-300 rounded-md px-4 py-2 w-full md:w-1/4 min-w-24 flex-grow"
       >
         <option value={1}>Week 1</option>
         <option value={2}>Week 2</option>

@@ -249,8 +249,8 @@ const StockChartWithShapes: React.FC = () => {
   }, [stockState]);
 
   return (
-    <div className="border border-black z-50 sm:w-[100%] lg:w-[85%] h-96 relative">
-      <canvas ref={canvasRef} width="1200" height="600" />
+    <div className="border border-black z-50 w-full h-96 relative">
+      <canvas ref={canvasRef} />
       {tooltipPosition && tooltipData.length > 0 && (
         <div
           className="absolute border border-gray-200 bg-white p-2 rounded shadow-lg"

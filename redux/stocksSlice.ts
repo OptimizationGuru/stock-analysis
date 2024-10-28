@@ -54,7 +54,7 @@ const stockSlice = createSlice({
         return;
       }
 
-      const generatedStockData = generateMockStockData(stockName, weekNumber);
+      const generatedStockData = generateMockStockData(stockName, weekNumber, 'IBM');
       const transformedData: StockState =
         transformStockData(generatedStockData);
 

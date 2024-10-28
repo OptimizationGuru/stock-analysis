@@ -6,18 +6,20 @@ import Navbar from '@/components/Navbar';
 
 const HomePage = () => {
   return (
-    <div className="w-screen h-full p-4 flex flex-col items-center justify-center ">
+    <div className="w-full h-full p-4 flex flex-col items-center justify-start">
       <h1 className="text-3xl text-blue-500 font-bold my-4 text-center">
         Stock Analysis Dashboard
       </h1>
 
-      <div className="w-full md:w-[35%] px-4 my-2">
+      <div className="w-full md:w-[45%] mb-4">
         <Navbar />
       </div>
-      <div className="mb-8 w-full flex justify-center">
+
+      <div className="w-full flex justify-center mb-4">
         <Chart />
       </div>
-      <div className="w-full max-w-full justify-center">
+
+      <div className="w-full max-w-full">
         <Table />
       </div>
     </div>
