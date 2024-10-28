@@ -50,11 +50,15 @@ const StockChartWithShapes: React.FC = () => {
   }, [searchStockState]);
 
   useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx) {
       console.error('Canvas context not available');
       return;
     }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const formatData = (arr: StockDataPoint[]) => {
       return (
@@ -257,7 +261,7 @@ const StockChartWithShapes: React.FC = () => {
   }
 
   return (
-    <div className="border border-black z-50 w-full h-96 relative">
+    <div className="border border-black z-50 w-full lg:w-3/4 h-96 relative">
       <canvas ref={canvasRef} />
       {tooltipPosition && tooltipData.length > 0 && (
         <div
@@ -269,7 +273,8 @@ const StockChartWithShapes: React.FC = () => {
         >
           {tooltipData.map((data) => (
             <div key={data.label}>
-              {data.label}: ${data.value}
+              {data.label}:
+              {data.label === 'volume Sold:' ? data.value : `$${data.value}`}
             </div>
           ))}
         </div>

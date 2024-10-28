@@ -64,20 +64,32 @@ const generateMockStockData = (
 
   for (let day = startDay; day <= endDay; day++) {
     const dayOpenPrice = previousClosingPrice;
+
+    // Ensure the dayHighestPrice is within the range
     const dayHighestPrice =
       dayOpenPrice + random() * (priceRange.max - priceRange.min);
-    const dayLowestPrice =
-      dayOpenPrice - random() * (priceRange.max - priceRange.min);
+
+    // Ensure dayLowestPrice does not go below zero
+    const dayLowestPrice = Math.max(
+      0, // Ensure no negative price
+      dayOpenPrice - random() * (priceRange.max - priceRange.min)
+    );
+
+    // Ensure the dayClosingPrice is between dayLowestPrice and dayHighestPrice
     const dayClosingPrice =
       dayLowestPrice + random() * (dayHighestPrice - dayLowestPrice);
+
+    // Generate volume sold
     const dayVolumeSold = Math.floor(random() * 3000) + 500;
 
+    // Push the generated values into respective arrays
     openPrice.push({ day, value: parseFloat(dayOpenPrice.toFixed(2)) });
     highestPrice.push({ day, value: parseFloat(dayHighestPrice.toFixed(2)) });
     lowestPrice.push({ day, value: parseFloat(dayLowestPrice.toFixed(2)) });
     closingPrice.push({ day, value: parseFloat(dayClosingPrice.toFixed(2)) });
     volumeSold.push({ day, value: dayVolumeSold });
 
+    // Update the previous closing price for the next iteration
     previousClosingPrice = dayClosingPrice;
   }
 
@@ -169,10 +181,6 @@ const stockSlice = createSlice({
       state.closingPrice = newCacheItem.closingPrice;
       state.lowestPrice = newCacheItem.lowestPrice;
       state.volumeSold = newCacheItem.volumeSold;
-
-      console.log('Updating cache with new data');
-      console.log('Cache Length:', state.cache.length);
-      console.log('Current State:', JSON.stringify(state, null, 2));
     },
   },
 });
