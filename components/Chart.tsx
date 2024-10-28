@@ -4,7 +4,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { ChartDataset } from 'chart.js';
 
-import { stockDataArray, StockDataPoint, StockState } from '@/utils/enums';
+import {
+  stockDataArray,
+  StockDataPoint,
+  StockState,
+} from '../redux/stocksSlice';
 
 Chart.register(...registerables);
 
@@ -247,6 +251,10 @@ const StockChartWithShapes: React.FC = () => {
       chart.destroy();
     };
   }, [stockState]);
+
+  if (!searchStockState || !searchStockState.stock) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="border border-black z-50 w-full h-96 relative">
