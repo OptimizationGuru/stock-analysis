@@ -274,7 +274,7 @@ const StockChartWithShapes: React.FC = () => {
           {tooltipData.map((data) => (
             <div key={data.label}>
               {data.label}:
-              {data.label === 'volume Sold:' ? data.value : `$${data.value}`}
+              {data.label === 'Volume Sold' ? data.value : `$${data.value}`}
             </div>
           ))}
         </div>

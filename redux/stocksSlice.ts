@@ -65,31 +65,25 @@ const generateMockStockData = (
   for (let day = startDay; day <= endDay; day++) {
     const dayOpenPrice = previousClosingPrice;
 
-    // Ensure the dayHighestPrice is within the range
     const dayHighestPrice =
       dayOpenPrice + random() * (priceRange.max - priceRange.min);
 
-    // Ensure dayLowestPrice does not go below zero
     const dayLowestPrice = Math.max(
-      0, // Ensure no negative price
+      0,
       dayOpenPrice - random() * (priceRange.max - priceRange.min)
     );
 
-    // Ensure the dayClosingPrice is between dayLowestPrice and dayHighestPrice
     const dayClosingPrice =
       dayLowestPrice + random() * (dayHighestPrice - dayLowestPrice);
 
-    // Generate volume sold
     const dayVolumeSold = Math.floor(random() * 3000) + 500;
 
-    // Push the generated values into respective arrays
     openPrice.push({ day, value: parseFloat(dayOpenPrice.toFixed(2)) });
     highestPrice.push({ day, value: parseFloat(dayHighestPrice.toFixed(2)) });
     lowestPrice.push({ day, value: parseFloat(dayLowestPrice.toFixed(2)) });
     closingPrice.push({ day, value: parseFloat(dayClosingPrice.toFixed(2)) });
     volumeSold.push({ day, value: dayVolumeSold });
 
-    // Update the previous closing price for the next iteration
     previousClosingPrice = dayClosingPrice;
   }
 
