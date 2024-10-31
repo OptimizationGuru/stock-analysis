@@ -28,7 +28,7 @@ You can explore the live version of TrendingTrade here: [Live Demo - TrendingTra
 - CSS
 - TailwindCSS
 - TypeScript
-- Redux (or any other relevant skills)
+- Redux 
 
 ## 📚 Resources
 
